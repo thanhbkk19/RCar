@@ -1,3 +1,4 @@
+import enum
 import cv2 as cv
 import torch
 import numpy as np
@@ -78,7 +79,7 @@ def get_loaders(
     )
     return train_loader,val_loader
 
-def check_accuracy(loader, model, batch_size = 8, device="cuda"):
+def check_accuracy(loader, model, epoch, batch_size = 8, device="cuda"):
     num_correct = 0
     num_pixels = 0
     model.eval()
@@ -91,7 +92,7 @@ def check_accuracy(loader, model, batch_size = 8, device="cuda"):
             preds = (preds>0.5).float()
             num_correct += (preds==y).sum()
             num_pixels += torch.numel(preds)
-    print(f"Got {num_correct}/{num_pixels*batch_size} ----> accuracy = {num_correct/num_pixels*100:.2f}")
+    print(f"EPOCH: {epoch} Got {num_correct}/{num_pixels*batch_size} ----> accuracy = {num_correct/num_pixels*100:.2f}")
     model.train()
 
 def one_hot_reverse(preds,info_path="class_dict.csv"):
@@ -112,9 +113,26 @@ def save_predictions_as_imgs(loader, model, path = "predictions",device = "cuda"
             #preds = (preds >0.5).float()
         preds = one_hot_reverse(preds)
         for i in range(len(preds)):
-            cv2.imwrite(f"{path}/model_predict/pred_{idx}_{i}.png",preds[i])
+            BGRpreds = cv2.cvtColor(preds[i],cv2.COLOR_RGB2BGR)
+            cv2.imwrite(f"{path}/model_predict/pred_{idx}_{i}.png",BGRpreds)
         # torchvision.utils.save_image(y.unsqueeze(1),f"{path}/label/label_{idx}.png")
     model.train()
+
+def val_loss(loader, model, loss_fn, epoch, device="cuda"):
+    model.eval()
+    loss_total = 0
+    with torch.no_grad():
+        for x,y in loader:
+            x = x.to(device)
+            y = y.to(device)
+            y = y.float().to(device = device)
+            y = y.permute(0,3,1,2)
+            preds = model(x)
+            loss = loss_fn(y, preds)
+            loss_total+= loss
+    print(f"total loss in val dataset at epoch {epoch}: {loss_total}")
+    return loss_total
+
 
 if __name__ =="__main__":
     info_path = "/home/gumiho/project/WASR_seg/WASR/class_dict.csv"

@@ -80,8 +80,9 @@ def main():
             "state_dict":model.state_dict(),
             "optimizer":optimizer.state_dict(),
             }
-        save_checkpoints(checkpoint,file_name="checkpoint_FCloss.pth.tar")
-        check_accuracy(val_loader, model, device=device)
+        save_checkpoints(checkpoint,file_name="checkpoint_FCloss_g5.pth.tar")
+        check_accuracy(val_loader, model, epoch=epoch, batch_size=BATCH_SIZE, device=device)
+        val_loss(val_loader, model, loss_fn=loss_fn, epoch=epoch, device = device)
         save_predictions_as_imgs(val_loader,model,path="predictions",device=device)
 
 if __name__ =="__main__":
