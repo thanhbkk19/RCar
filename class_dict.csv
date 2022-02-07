@@ -1,0 +1,9 @@
+name,r,g,b
+_background_,0,0,0
+lane,128,0,0
+straight,0,128,0
+left,128,128,0
+right,0,0,128
+no_straight,128,0,128
+no_left,0,128,128
+no_right,128,128,128
