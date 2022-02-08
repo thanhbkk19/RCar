@@ -113,8 +113,8 @@ def save_predictions_as_imgs(loader, model, path = "predictions",device = "cuda"
             #preds = (preds >0.5).float()
         preds = one_hot_reverse(preds)
         for i in range(len(preds)):
-            BGRpreds = cv2.cvtColor(preds[i],cv2.COLOR_RGB2BGR)
-            cv2.imwrite(f"{path}/model_predict/pred_{idx}_{i}.png",BGRpreds)
+            #BGRpreds = cv2.cvtColor(preds[i],cv2.COLOR_RGB2BGR)
+            cv2.imwrite(f"{path}/model_predict/pred_{idx}_{i}.png",preds[i])
         # torchvision.utils.save_image(y.unsqueeze(1),f"{path}/label/label_{idx}.png")
     model.train()
 

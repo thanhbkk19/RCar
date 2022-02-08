@@ -46,7 +46,7 @@ def train_fn(loader, model, optimizer, loss_fn, scaler):
         loop.set_postfix(loss=loss.item())
 
 def main():
-    model = UNET(in_channels=3,out_channels=8,features=[8,16,32,64]).to(device)
+    model = UNET(in_channels=3,out_channels=8,features=[16,32,64,128]).to(device)
     # loss_fn = nn.CrossEntropyLoss()
     loss_fn = FocalLoss(gamma=5,logits=True)
     optimizer = optim.Adam(model.parameters(),lr=lr)

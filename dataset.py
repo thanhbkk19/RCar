@@ -6,7 +6,7 @@ from torch.utils.data import Dataset
 from PIL import Image
 import os
 import pandas as pd
-
+import cv2
 def get_labels_info(info_path):
     info = pd.read_csv(info_path)
     # info has format: [['obstacles' 59 193 246]...]
@@ -42,7 +42,8 @@ class RC_dataset(Dataset):
     def __getitem__(self,idx):
         img_path = os.path.join(self.image_dir,self.images[idx])
         label_path = os.path.join(self.label_dir, self.images[idx].replace(".png","_converted.png"))
-        img = np.array(Image.open(img_path).convert("RGB"),dtype=np.float32)
+        img = np.array(Image.open(img_path),dtype=np.float32)
+        img = cv2.cvtColor(img, cv2.COLOR_HSV2BGR)
         label = np.array(Image.open(label_path),dtype=np.float32)
 
         img, label = convert_data(img, label, self.info_path)
@@ -53,3 +54,12 @@ class RC_dataset(Dataset):
 
         return img, label
 
+if __name__ =="__main__":
+    img = np.array(Image.open("/home/gumiho/project/car_racing2/Round2_data/train/424.png"))
+    print(img.shape)
+    import cv2
+    img = cv2.cvtColor(img, cv2.COLOR_HSV2BGR)
+    cv2.imshow("test",img)
+    print(np.unique(img))
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
